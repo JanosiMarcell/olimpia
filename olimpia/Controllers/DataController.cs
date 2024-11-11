@@ -31,5 +31,49 @@ namespace Olimpia.Controllers
             }
             return BadRequest();
         }
+
+        [HttpGet]
+        public ActionResult<Data> Get()
+        {
+            using (var context = new OlimpiaContext())
+            {
+                return Ok(context.Datas.ToList());
+            }
+        }
+        [HttpGet("{id}")]
+        public ActionResult<Data> GetById(Guid id)
+        {
+            using (var context = new OlimpiaContext())
+            {
+                var data = context.Datas.FirstOrDefault(x => x.Id == id);
+                if (data != null)
+                {
+                    return Ok(data);
+                }
+                return NotFound();
+            }
+        }
+        [HttpPut("{id}")]
+        public ActionResult<Data> Put(Guid Id, UpdateDataDto updateDataDto)
+        {
+            using (var context = new OlimpiaContext())
+            {
+                var existingData = context.Datas.FirstOrDefault(d => d.Id == Id);
+                if (existingData != null)
+                {
+                    existingData.Country = updateDataDto.Country;
+                    existingData.County = updateDataDto.County;
+                    existingData.Description = updateDataDto.Description;
+            
+                    context.Datas.Update(existingData);
+                    context.SaveChanges();
+
+                    return Ok(existingData);
+
+                }
+                return NotFound();
+            }
+
+        }
     }
 }
